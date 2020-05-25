@@ -6,6 +6,7 @@ import com.netty.rpc.netty.codec.RpcRequest;
 import com.netty.rpc.netty.codec.RpcResponse;
 import com.netty.rpc.netty.core.RpcHandler;
 import com.netty.rpc.netty.core.ServiceManager;
+import com.netty.rpc.netty.core.ServiceRegistry;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -23,6 +24,9 @@ public class NettyServer implements CommandLineRunner {
 
     @Autowired
     ServiceManager serviceManager;
+
+    @Autowired
+    ServiceRegistry serviceRegistry;
 
     @Override
     public void run(String... args) throws Exception {
@@ -47,6 +51,7 @@ public class NettyServer implements CommandLineRunner {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             ChannelFuture future = bootstrap.bind(8000).sync();
+            serviceRegistry.registry("127.0.0.1:8000");
             future.channel().closeFuture().sync();
         } finally {
             work.shutdownGracefully();
